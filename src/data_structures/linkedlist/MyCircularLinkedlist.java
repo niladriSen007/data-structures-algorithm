@@ -1,15 +1,13 @@
 package data_structures.linkedlist;
 
-public class MyDoublyLinkedList<T> {
+public class MyCircularLinkedlist<T> {
     class Node<T> {
         T data;
         Node<T> next;
-        Node<T> prev;
 
         Node(T data) {
             this.data = data;
             this.next = null;
-            this.prev = null;
         }
     }
 
@@ -17,10 +15,10 @@ public class MyDoublyLinkedList<T> {
     public Node<T> head;
     public Node<T> tail;
 
-    public MyDoublyLinkedList() {
+    public MyCircularLinkedlist() {
         this.head = null;
         this.tail = null;
-        this.size = 0;
+        size = 0;
     }
 
     public void addFirst(T data) {
@@ -30,24 +28,22 @@ public class MyDoublyLinkedList<T> {
             tail = newNode;
         } else {
             newNode.next = head;
-            head.prev = newNode;
         }
         head = newNode;
+        tail.next = head;
         size++;
     }
 
     public void addLast(T data) {
         Node<T> newNode = new Node<>(data);
-
         if (head == null) {
             head = newNode;
         } else {
             tail.next = newNode;
-            newNode.prev = tail;
         }
         tail = newNode;
+        tail.next = head;
         size++;
-
     }
 
     public void add(int index, T data) {
@@ -70,23 +66,12 @@ public class MyDoublyLinkedList<T> {
             previous = previous.next;
             startIndex++;
         }
+
         newNode.next = previous.next;
-        newNode.prev = previous;
-        previous.next.prev = newNode;
         previous.next = newNode;
 
         size++;
-    }
 
-    public T get(int index) {
-        checkIndex(index);
-        int startIndex = 0;
-        Node<T> current = head;
-        while (startIndex < index) {
-            current = current.next;
-            startIndex++;
-        }
-        return current.data;
     }
 
     public T removeFirst() {
@@ -98,9 +83,10 @@ public class MyDoublyLinkedList<T> {
             head = null;
             tail = null;
         } else {
-            head = head.next;
-            head.prev = null;
+            head = nodeToBeRemoved.next;
+            tail.next = head;
         }
+
         size--;
         return nodeToBeRemoved.data;
     }
@@ -114,9 +100,14 @@ public class MyDoublyLinkedList<T> {
             head = null;
             tail = null;
         } else {
-            tail = tail.prev;
-            tail.next = null;
+            Node<T> tailsPrevious = head;
+            while (tailsPrevious.next != tail) {
+                tailsPrevious = tailsPrevious.next;
+            }
+            tailsPrevious.next = head;
+            tail = tailsPrevious;
         }
+
         size--;
         return nodeToBeRemoved.data;
     }
@@ -129,6 +120,7 @@ public class MyDoublyLinkedList<T> {
 
         if (index == 0)
             removeFirst();
+
         if (index == size - 1)
             removeLast();
 
@@ -138,19 +130,17 @@ public class MyDoublyLinkedList<T> {
             previous = previous.next;
             startIndex++;
         }
+
         Node<T> nodeToBeRemoved = previous.next;
         previous.next = nodeToBeRemoved.next;
-        nodeToBeRemoved.next.prev = previous;
-        nodeToBeRemoved.prev = null;
-        nodeToBeRemoved.next = null;
 
         size--;
         return nodeToBeRemoved.data;
+
     }
 
     private void checkIndex(int index) {
         if (index < 0 || index > size)
             throw new IllegalStateException("INDEX IS OUT OF RANGE");
     }
-
 }
